@@ -15,9 +15,15 @@ import img from '../../images/film-poster-placeholder.png'
 import { Link } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import { MoviesContext } from "../../contexts/moviesContext";
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import FavouriteAvatarIcon from "../cardAvatar/favouriteAvatar";
+import PlaylistAddCheckAvatarIcon from "../cardAvatar/playListAddCheckAvatar";
+
 
 export default function MovieCard({ movie, action }) {
-  const { favorites, addToFavorites } = useContext(MoviesContext);
+  const { favorites, addToFavorites, watchList, addToWatchList } = useContext(MoviesContext);
+  let avatarIcon = null;
+  const url = window.location.pathname
 
   if (favorites.find((id) => id === movie.id)) {
     movie.favorite = true;
@@ -25,21 +31,23 @@ export default function MovieCard({ movie, action }) {
     movie.favorite = false
   }
 
-  const handleAddToFavorite = (e) => {
-    e.preventDefault();
-    addToFavorites(movie);
-  };
+  if (watchList.find((id) => id === movie.id)){
+    movie.watchList = true
+  } else {
+    movie.watchList = false
+  }
+  
+
+  if(movie.favorite && (url.includes('favorites') || url === '/')) {
+    avatarIcon = <FavouriteAvatarIcon />
+  } else if(movie.watchList && url.includes('upcoming')){
+    avatarIcon = <PlaylistAddCheckAvatarIcon />
+  }
 
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardHeader
-        avatar={
-          movie.favorite ? (
-            <Avatar sx={{ backgroundColor: 'red' }}>
-              <FavoriteIcon />
-            </Avatar>
-          ) : null
-        }
+        avatar={avatarIcon}
         title={
           <Typography variant="h5" component="p">
             {movie.title}{" "}
